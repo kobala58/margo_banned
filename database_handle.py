@@ -1,5 +1,6 @@
 import json
 import mysql.connector as mysql
+from discord_webhook import DiscordWebhook
 
 class dboperation:
     def __init__(self):
@@ -27,6 +28,15 @@ class dboperation:
         for x in records:
             banned.append(x[0])
         return banned 
+    
+    def add_player(self,data):
+        query = "INSERT INTO `Gracze`(`eq_id`, `eq_name`, `eq_lvl`, `eq_prof`, `acc_id`, `clan_name`, `clan_id`) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        try:
+            self.cursor.executemany(query, data)
+        except:
+            webhook = DiscordWebhook(url='https://discordapp.com/api/webhooks/789054968144986112/xWYpVPmkuL9ODCZrsOk8HThp52Cud1gSHNL_qt8oetvadIRe8XmGHW-7ZkMVRvPZ_yjH', content='Błąd w tym secie danych \n ````\n {} ```'.format(data))
+            webhook.execute()
+        self.db.commit()
 
 
 

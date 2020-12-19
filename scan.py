@@ -22,11 +22,11 @@ def get_plyers(link):
     return z
 
 def banned():
-    db = dboperation()
     seen = set()
     now = date.today()
     today = now.strftime("%Y-%m-%d")
     for x in range(0,100):
+        db = dboperation()
         link = "https://www.margonem.pl/?task=ranking&w=aldous&p="+str(x)
         a = get_plyers(link)
         banned_list = []
@@ -65,7 +65,7 @@ def new_bans():
                 is_ban = soup.find('p',id="info").text
                 if str(is_ban.strip()) == "Konto zablokowane":
                     seen.add(z[0])
-                    webhook = DiscordWebhook(url='https://discord.com/api/webhooks/785516123515781130/LnBJT1OCStYQ0y8CZz3Hw-ebvj7tTJm0w8tyMBNdwlzvrkER9rVAWgNjDDhfEAsmNx5O', content='{}: https://www.margonem.pl/?{}'.format(z[1],z[0]))
+                    webhook = DiscordWebhook(url='https://discord.com/api/webhooks/785516123515781130/LnBJT1OCStYQ0y8CZz3Hw-ebvj7tTJm0w8tyMBNdwlzvrkER9rVAWgNjDDhfEAsmNx5O', content='{}: https://www.margonem.pl/{}'.format(z[1],z[0]))
                     response = webhook.execute()
                     id_konto = re.sub("\D", "", z[0])
                     tr = (id_konto,z[0],z[1],today)
