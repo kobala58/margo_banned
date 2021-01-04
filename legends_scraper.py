@@ -69,7 +69,7 @@ def getinfo(link):
 
 def banned():
     seen = set()
-    for x in range(43,100):
+    for x in range(1,100):
         link = "https://www.margonem.pl/?task=ranking&w=aldous&p="+str(x)
         a = get_plyers(link)
         print("Start {} page".format(x))

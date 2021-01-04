@@ -21,6 +21,6 @@ def get_players(link):
         #for z in test:
             #print(z.text)
 
-get_players("https://www.margonem.pl/?task=clanpage&id=139&w=aldous")
+#get_players("https://www.margonem.pl/?task=clanpage&id=139&w=aldous")
         
             

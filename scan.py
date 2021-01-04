@@ -45,7 +45,7 @@ def banned():
         db.insertbanned(banned_list)
     return banned_list
 
-def new_bans():
+def new_bans(bans_webhook):
     db = dboperation()
     banned = db.db_banned()
     seen = set(banned)
@@ -64,11 +64,12 @@ def new_bans():
                 if str(is_ban.strip()) == "Konto zablokowane":
                     seen.add(z[0])
                     print("ZNALEZIONO BANA")
-                    DiscordWebhook(url='https://discord.com/api/webhooks/785516123515781130/LnBJT1OCStYQ0y8CZz3Hw-ebvj7tTJm0w8tyMBNdwlzvrkER9rVAWgNjDDhfEAsmNx5O', content='{}: https://www.margonem.pl/{}'.format(z[1],z[0])).execute()
+                    DiscordWebhook(url=bans_webhook, content='{}: https://www.margonem.pl/{}'.format(z[1],z[0])).execute()
                     id_konto = re.sub("\D", "", z[0])
                     tr = (id_konto,z[0],z[1],today)
                     banned_list.append(tr)
         print("Started inserting...")
         db.insertbanned(banned_list)
-    
-new_bans()
+
+bans_webhook = "Enter your DC webhook"
+new_bans(bans_webhook) 
