@@ -38,10 +38,22 @@ class dboperation:
             webhook.execute()
         self.db.commit()
 
-
-
-
-
-
+    def lid(self,data):
+        lids = []
+        query = "SELECT Gracze.eq_name FROM Gracze INNER JOIN Gracze_copy ON Gracze.acc_id = Gracze_copy.acc_id"
+        self.cursor.execute(query)
+        records = self.cursor.fetchall()
+        for x in records:
+            lids.append(x[0])
+        return lids 
+    
+    def lega(self,data):
+        query = "INSERT INTO leguwy(konto_id,nazwa_postaci,lega_nazwa,opis) VALUES (%s,%s,%s,%s)"
+        try:
+            self.cursor.executemany(query, data)
+        except:
+            webhook = DiscordWebhook(url='https://discordapp.com/api/webhooks/789054968144986112/xWYpVPmkuL9ODCZrsOk8HThp52Cud1gSHNL_qt8oetvadIRe8XmGHW-7ZkMVRvPZ_yjH', content='Błąd w tym secie danych \n ````\n {} ```'.format(data))
+            webhook.execute()
+        self.db.commit()
 
 

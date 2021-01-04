@@ -10,21 +10,35 @@ from selenium.webdriver.chrome.options import Options
 import mysql.connector
 from mysql.connector import Error
 import re
+import datetime
+from database_handle import dboperation
 
 
 chrome_options = Options()
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument('--headless')
 
+def get_plyers(link):
+    page = requests.get(link)  
+    soup = BeautifulSoup(page.content, 'html.parser')
+    results = soup.find_all('tr', class_='row0')
+    res2 = soup.find_all('tr', class_='row1')
+    wff = results + res2
+    z = []
+    for postki in wff:
+        a = [postki.find('a')['href'],postki.find('a').text]
+        z.append(a)
+    return z
 
 def getinfo(link):
+    db = dboperation()
+    legi = []
     #base = "https://www.margonem.pl/"
     page = requests.get(link)
     soup = BeautifulSoup(page.content, 'html.parser')
     postki = soup.find_all('div' , class_="inside_char")
-    browser = webdriver.Chrome(options=chrome_options)
     for x in postki:
-        #print(x.find(class_='inside_char_avatar')["c_lvl"])
+        browser = webdriver.Chrome(options=chrome_options)
         world = x.find(class_='inside_char_avatar')["c_world"]
         if world != "Aldous":
             continue
@@ -32,26 +46,39 @@ def getinfo(link):
         z = x.find(class_='inside_char_stats')
         z = z.find('b')
         nick = z.text
-        print(link+a)
         browser.get(link+a)
         soup2 = BeautifulSoup(browser.page_source, 'html.parser')
         soup2 = soup2.find(id = "tab1_content")
         items = soup2.find_all(class_ = "itemborder")
         for xx in items:
             z = xx.find("img")["tip"]
-            soup = BeautifulSoup(z, 'html.parser')
-            name = soup.find("b").text
-            item = soup.find(class_ = "legendary")
-            who = soup.find(class_ = "looter")
+            soup3 = BeautifulSoup(z, 'html.parser')
+            name = soup3.find("b").text
+            item = soup3.find(class_ = "legendary")
+            who = soup3.find(class_ = "looter")
             id_konto = re.sub("\D", "", link)
             if item is not None:
                 try:
-                    print(id_konto,"/",nick,"/",name,"/",who.text)
+                    legi.append((id_konto,nick,name,who.text))
                 except AttributeError:
-                    print(id_konto,"/",nick,"/",name,"/","CRAFTED")
-    browser.close()    
+                    legi.append((id_konto,nick,name,"CRAFTED"))
+        browser.close()
+    if legi:
+        db.lega(legi)
     
 
+def banned():
+    seen = set()
+    for x in range(43,100):
+        link = "https://www.margonem.pl/?task=ranking&w=aldous&p="+str(x)
+        a = get_plyers(link)
+        print("Start {} page".format(x))
+        for z in a:
+            if z[0] not in seen:
+                    seen.add(z[0])
+                    id_konto = re.sub("\D", "", z[0])
+                    getinfo("https://www.margonem.pl/"+z[0])
 
-getinfo("https://www.margonem.pl/?task=profile&id=1157217")
-
+print("Start: {}".format(datetime.datetime.now()))
+banned()
+print("End: {}".format(datetime.datetime.now()))
